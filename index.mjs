@@ -6,29 +6,28 @@ const app = express();
 const PORT = process.env.PORT || 3000;
 
 app.get('/lichess-stats/:username', async (req, res) => {
-  const { username } = req.params;
-  console.log(`Fetching data for user: ${username}`);
+    const { username } = req.params;
+    console.log(`Fetching data for user: ${username}`);
 
-  try {
-    const response = await fetch(`https://lichess.org/api/user/${username}`);
-    if (!response.ok) {
-      throw new Error(`Failed to fetch data for user: ${username}`);
-    }
-    const data = await response.json();
-    console.log('Data fetched successfully:', data);
+    try {
+        const response = await fetch(`https://lichess.org/api/user/${username}`);
+        if (!response.ok) {
+            throw new Error(`Failed to fetch data for user: ${username}`);
+        }
+        const data = await response.json();
+        console.log('Data fetched successfully:', data);
 
-    const seenAt = new Date(data.seenAt || Date.now());
-    const now = new Date();
-    const timeDiff = now - seenAt;
+        const seenAt = new Date(data.seenAt || Date.now());
+        const now = new Date();
+        const timeDiff = now - seenAt;
 
-    const days = Math.floor(timeDiff / (1000 * 60 * 60 * 24));
-    const hours = Math.floor((timeDiff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
-    const minutes = Math.floor((timeDiff % (1000 * 60)) / 1000 / 60);
+        const days = Math.floor(timeDiff / (1000 * 60 * 60 * 24));
+        const hours = Math.floor((timeDiff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+        const minutes = Math.floor((timeDiff % (1000 * 60)) / 1000 / 60);
 
-    const onlineStatusColor = (days === 0 && hours === 0 && minutes <= 5) ? '#4caf50' : '#9e9e9e';
-    const onlineStatusText = (days === 0 && hours === 0) ? 
-      `Online: ${minutes} min ago` : 
-      `Online: ${days} days, ${hours} h, and ${minutes} min ago`;
+        const onlineStatusColor = (days === 0 && hours === 0 && minutes <= 5) ? '#4caf50' : '#9e9e9e';
+        const onlineStatusText = (days === 0 && hours === 0 && minutes <= 5) ? 'Online' : `Online: ${days} days, ${hours} h, and ${minutes} min ago`;
+
         const svg = create({ version: '1.0', encoding: 'UTF-8' })
             .ele('svg', { xmlns: 'http://www.w3.org/2000/svg', width: 600, height: 350, style: 'border-radius: 9px; background-color: #1e1e1e; box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);' })
                 .ele('style')
